@@ -1,53 +1,36 @@
-property :install_path, String, default: "/opt/splunkforwarder/"
+resource_name :splunk_forwarder
+
+property :install_path, String, default: "/opt/splunkforwarder"
 property :tarball_name, String, default: 'splunkforwarder-6.5.2-67571ef4b87d-Linux-x86_64.tgz'
 property :tarball_uri, String, default: lazy { |r| "https://download.splunk.com/products/universalforwarder/releases/6.5.2/linux/#{r.tarball_name}" }
-property :checksum_uri, String, default: lazy { |r| "#{r.tarball_url}.md5" }
+property :checksum_uri, String, default: lazy { |r| "#{r.tarball_uri}.md5" }
 property :splunk_user, String, default: 'splunk'
 property :splunk_group, String, default: 'splunk'
 
 action_class do
 
   def extraction_command
-    cmd = "tar -xzf #{Chef::Config['file_cache_path']}/#{new_resource.tarball_name} -C #{new_resource.install_path}"
-  end
-
-  # Download the MD5 checksum file
-  def fetch_checksum
-    uri = URI("#{new_resource.checksum_uri}"
-    request = Net::HTTP.new(uri.host, uri.port)
-    response = request.get(uri)
-    if uri.to_s.start_with?('https')
-      request.use_ssl = true
-      request.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    end
-
-    if response.code != '200'
-      Chef::Log.fatal("Fetching the Tomcat tarball checksum at #{uri} resulted in an error #{response.code}")
-      raise
-    end
-    response.body.split(' ')[0]
-    rescue => e
-      Chef::Log.fatal("Could not fetch the checksum due to an error: #{e}")
-    raise
+    cmd = "tar -xzopf #{Chef::Config['file_cache_path']}/#{new_resource.tarball_name} -C #{new_resource.install_path} --strip 1"
   end
 
   # validate the mirror checksum against the on disk checksum
   # return true if they match. Append .bad to the cached copy to prevent using it next time
   def validate_checksum(file_to_check)
-    desired = fetch_checksum
+    # desired = fetch_checksum
+    desired = ::File.read("#{Chef::Config['file_cache_path']}/#{new_resource.tarball_name}.md5").split.last
     actual = Digest::MD5.hexdigest(::File.read(file_to_check))
 
     if desired == actual
       true
     else
-      Chef::Log.fatal("The checksum of the tomcat tarball on disk (#{actual}) does not match the checksum provided from the mirror (#{desired}). Renaming to #{::File.basename(file_to_check)}.bad")
+      Chef::Log.fatal("The checksum of the splunk tarball on disk (#{actual}) does not match the checksum provided from the mirror (#{desired}). Renaming to #{::File.basename(file_to_check)}.bad")
       ::File.rename(file_to_check, "#{file_to_check}.bad")
       raise
     end
   end
 end
 
-action_install do
+action :install do
   # for those odd RHEL systems
   package 'tar'
 
@@ -71,6 +54,11 @@ action_install do
     group new_resource.splunk_group
   end
 
+  remote_file "splunk checksum" do
+    source checksum_uri
+    path "#{Chef::Config['file_cache_path']}/#{new_resource.tarball_name}.md5"
+  end
+
   remote_file "splunk tarball" do
     source tarball_uri
     path "#{Chef::Config['file_cache_path']}/#{new_resource.tarball_name}"
@@ -87,6 +75,6 @@ action_install do
   execute "chown install dir as #{new_resource.splunk_user}" do
     command "chown -R #{new_resource.splunk_user}:#{new_resource.splunk_group} #{new_resource.install_path}"
     action :run
-    not_if { Etc.getpwuid(::File.stat("#{new_resource.install_path}/LICENSE").uid).name == new_resource.splunk_user }
+    not_if { Etc.getpwuid(::File.stat("#{new_resource.install_path}/license-eula.txt").uid) == new_resource.splunk_user }
   end
 end
