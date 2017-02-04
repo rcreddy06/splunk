@@ -1,12 +1,16 @@
 ---
 driver:
-  name: vagrant
+  # name: vagrant
+  name: dokken
+  chef_version: latest
+  privileged: true # because Docker and SystemD/Upstart
+
+transport:
+  name: dokken
 
 provisioner:
-  name: chef_zero
-  # You may wish to disable always updating cookbooks in CI or other testing environments.
-  # For example:
-  #   always_update_cookbooks: <%= !ENV['CI'] %>
+  name: dokken
+  # name: chef_zero
   always_update_cookbooks: true
 
 verifier:
@@ -14,7 +18,12 @@ verifier:
 
 platforms:
   - name: ubuntu-16.04
-  - name: centos-7.2
+    driver:
+      image: ubuntu:16.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update
+  # - name: centos-7.2
 
 suites:
   - name: default

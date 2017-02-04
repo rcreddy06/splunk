@@ -1,4 +1,3 @@
 # splunk
 
-TODO: Enter the cookbook description here.
-
+Write something novel here
