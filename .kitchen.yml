@@ -33,3 +33,10 @@ suites:
       inspec_tests:
         - test/smoke/default
     attributes:
+  - name: splunk_forwarder
+    run_list:
+      - recipe[splunk_forwarder_test::default]
+    verifier:
+      inspec_tests:
+        - test/splunk_forwarder/default
+    attributes:
