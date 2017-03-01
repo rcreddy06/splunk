@@ -11,3 +11,8 @@ describe file('/opt/splunkforwarder/') do
   it { should exist }
   it { should be_owned_by 'test_user' }
 end
+
+describe service('splunk') do
+  it { should be_enabled }
+  it { should be_running }
+end
