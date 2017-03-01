@@ -21,7 +21,7 @@ platforms:
       image: ubuntu:16.04
       pid_one_command: /bin/systemd
       intermediate_instructions:
-        - RUN /usr/bin/apt-get update
+#        - RUN /usr/bin/apt-get update
   # - name: centos-7.2
 
 suites:
@@ -38,4 +38,11 @@ suites:
     verifier:
       inspec_tests:
         - test/splunk_forwarder/default
+    attributes:
+  - name: splunk_monitor
+    run_list:
+      - recipe[splunk_monitor_test::default]
+    verifier:
+      inspec_tests:
+        - test/splunk_monitor
     attributes:
