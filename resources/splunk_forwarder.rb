@@ -79,4 +79,21 @@ action :install do
     action :run
     not_if { Etc.getpwuid(::File.stat("#{new_resource.install_path}/license-eula.txt").uid) == new_resource.splunk_user }
   end
+
+  # enable start a boot
+  execute "#{new_resource.install_path}/bin/splunk enable boot-start -user #{new_resource.splunk_user} --accept-license" do
+    only_if { ::File.exist? "#{new_resource.install_path}/ftr" }
+  end
+
+  # create splunk service
+  service 'splunk' do
+    supports status: true, restart: true
+    action [:enable, :start]
+    case node['init_package']
+    when 'systemd'
+      provider Chef::Provider::Service::Systemd
+    else
+      provider Chef::Provider::Service::Init
+    end
+  end
 end
