@@ -11,6 +11,7 @@ resource_name :splunk_monitor
 
 property :path, String, name_property: true
 property :monitor_type, String, default: "file" # %w(file fschange winevent tcp splunktcp admon perfmon)
+property :monitor_options, Hash, default: {} #hash of monitor options { sourcetype: "access_combined", disabled: 0 }
 
 action_class do
 
@@ -21,20 +22,6 @@ action_class do
 
   def app_path
     return "/opt/splunkforwarder/etc/apps/00_autogen_inputs_#{clean_dir_name(new_resource.path)}/local"
-  end
-
-  def monitor_config
-    case monitor_type
-    when 'file'
-      return "[monitor://#{new_resource.path}]\n"
-    when 'winevent'
-
-    when 'tcp'
-
-    else
-      Chef::Log.fatal("You have set an incorrect monitor type for '#{new_resource.path}'")
-      raise "Failed to setup splunk monitor '#{new_resource.path}'"
-    end
   end
 end
 
@@ -47,7 +34,14 @@ action :install do
     group ::File.stat("/opt/splunkforwarder/license-eula.txt").gid
   end
 
-  file "#{app_path}/inputs.conf" do
-    content monitor_config
-  end
+  template "#{app_path}/inputs.conf" do
+    source 'monitor/inputs.conf.erb'
+    owner ::File.stat("/opt/splunkforwarder/license-eula.txt").uid
+    group ::File.stat("/opt/splunkforwarder/license-eula.txt").gid
+    variables(
+      :path => new_resource.path,
+      :type => new_resource.monitor_type,
+      :options => new_resource.monitor_options
+    )
+  end 
 end
