@@ -1,6 +1,8 @@
 resource_name :splunk_forwarder
 
 property :install_path, String, default: "/opt/splunkforwarder"
+# tarball name and uri will need to be updated for every new release since Splunk can't 
+# seem to just provide a standard uri schemed for pulling these.
 property :tarball_name, String, default: 'splunkforwarder-6.5.2-67571ef4b87d-Linux-x86_64.tgz'
 property :tarball_uri, String, default: lazy { |r| "https://download.splunk.com/products/universalforwarder/releases/6.5.2/linux/#{r.tarball_name}" }
 property :checksum_uri, String, default: lazy { |r| "#{r.tarball_uri}.md5" }
