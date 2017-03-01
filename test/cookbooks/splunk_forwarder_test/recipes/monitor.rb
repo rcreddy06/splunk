@@ -1,6 +1,14 @@
 # Pull in default recipe so we have the forwarder installed
 include_recipe 'splunk_forwarder_test::default'
 
+# ensure that the splunk service resource is available without cloning
+# the resource (CHEF-3694).
+begin
+  resources('service[splunk]')
+rescue Chef::Exceptions::ResourceNotFound
+  service 'splunk'
+end
+
 # Option hash for monitor options
 file_option_hash = { recursive: true }
 # Define a file/directory splunk_monitor instance

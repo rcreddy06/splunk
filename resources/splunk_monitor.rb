@@ -43,5 +43,6 @@ action :install do
       :type => new_resource.monitor_type,
       :options => new_resource.monitor_options
     )
+    notifies :restart, 'service[splunk]', :delayed
   end 
 end
