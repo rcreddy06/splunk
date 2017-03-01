@@ -4,8 +4,8 @@
 #[splunktcp-ssl:9996]
 #[fschange:/etc/]
 #[WinEventLog://Security]
-# [perfmon://LocalPhysicalDisk]
-# [admon://DefaultTargetDC]
+#[perfmon://LocalPhysicalDisk]
+#[admon://DefaultTargetDC]
 
 resource_name :splunk_monitor
 
