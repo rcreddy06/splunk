@@ -1,0 +1,21 @@
+# Dropped off by Chef
+
+<% case @type
+   when "file" -%>
+[monitor://<%= @path %>]
+<% when "winevent" -%>
+[WinEventLog://<%= @path %>]
+<% when "tcp" %>
+[tcp://<%= @path %>]
+<% when "admon" -%>
+[admon://<%= @path %>]
+<% when "perfmon" -%>
+[perfmon://<%= @path %>]
+<% when "fschange" -%>
+[fschange:<%= @path %>]
+<% when "splunktcp" -%>
+[splunktcp://<%= @path %>]
+<% end -%>
+<% @options.each_pair do |name, value| -%>
+<%= name %> = <%= value %>
+<% end unless @options.empty? -%>
