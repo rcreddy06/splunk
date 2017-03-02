@@ -37,7 +37,7 @@ action :install do
   end
 
   template "#{app_path}/inputs.conf" do
-    source 'monitor/inputs.conf.erb'
+    source ::File.join('monitor', 'inputs.conf.erb')
     owner ::File.stat("/opt/splunkforwarder/license-eula.txt").uid
     group ::File.stat("/opt/splunkforwarder/license-eula.txt").gid
     variables(
