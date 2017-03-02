@@ -13,6 +13,8 @@ property :path, String, name_property: true
 property :monitor_type, String, default: "file" # %w(file fschange winevent tcp splunktcp admon perfmon)
 property :monitor_options, Hash, default: {} #hash of monitor options { sourcetype: "access_combined", disabled: 0 }
 
+default_action :install
+
 action_class do
 
   # replace all forward slashes, period, or colons with underscores
@@ -35,7 +37,7 @@ action :install do
   end
 
   template "#{app_path}/inputs.conf" do
-    source 'monitor/inputs.conf.erb'
+    source ::File.join('monitor', 'inputs.conf.erb')
     owner ::File.stat("/opt/splunkforwarder/license-eula.txt").uid
     group ::File.stat("/opt/splunkforwarder/license-eula.txt").gid
     variables(

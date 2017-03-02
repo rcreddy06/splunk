@@ -9,6 +9,8 @@ property :checksum_uri, String, default: lazy { |r| "#{r.tarball_uri}.md5" }
 property :splunk_user, String, default: 'splunk'
 property :splunk_group, String, default: 'splunk'
 
+default_action :install
+
 action_class do
 
   def extraction_command

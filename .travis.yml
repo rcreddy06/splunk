@@ -1,0 +1,31 @@
+sudo: required
+dist: trusty
+cache: 
+  - bundler
+  - apt
+language: ruby
+services:
+  - docker
+
+addons:
+  apt:
+    sources:
+      - chef-stable-trusty
+    packages:
+      - chefdk
+
+env:
+  matrix:
+  - INSTANCE=splunk-forwarder-ubuntu-1604
+  - INSTANCE=splunk-monitor-ubuntu-1604
+
+before_script:
+  - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+  - eval "$(/opt/chefdk/bin/chef shell-init bash)"
+  - /opt/chefdk/embedded/bin/chef --version
+  - /opt/chefdk/embedded/bin/cookstyle --version
+  - /opt/chefdk/embedded/bin/foodcritic --version
+
+script: 
+  - bundle exec foodcritic .
+  - /opt/chefdk/embedded/bin/kitchen verify ${INSTANCE}
