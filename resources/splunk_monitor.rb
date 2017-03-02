@@ -13,6 +13,8 @@ property :path, String, name_property: true
 property :monitor_type, String, default: "file" # %w(file fschange winevent tcp splunktcp admon perfmon)
 property :monitor_options, Hash, default: {} #hash of monitor options { sourcetype: "access_combined", disabled: 0 }
 
+default_action :install
+
 action_class do
 
   # replace all forward slashes, period, or colons with underscores
