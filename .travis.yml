@@ -26,13 +26,6 @@ before_script:
   - /opt/chefdk/embedded/bin/cookstyle --version
   - /opt/chefdk/embedded/bin/foodcritic --version
 
-script: /opt/chefdk/embedded/bin/kitchen verify ${INSTANCE}
-
-matrix:
-  include:
-    - before_script:
-      - eval "$(/opt/chefdk/bin/chef shell-init bash)"
-
-    - script:
-      - /opt/chefdk/bin/chef exec rake
-      env: UNIT_AND_LINT=1
+script: 
+  - bundle exec foodcritic .
+  - /opt/chefdk/embedded/bin/kitchen verify ${INSTANCE}
