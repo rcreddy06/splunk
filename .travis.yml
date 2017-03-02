@@ -1,4 +1,5 @@
 sudo: required
+dist: trusty
 cache: 
   - bundler
   - apt
@@ -9,13 +10,12 @@ services:
 addons:
   apt:
     sources:
-      - chef-stable-xenial
+      - chef-stable-trusty
     packages:
       - chefdk
 
 env:
   matrix:
-  - INSTANCE=default-ubuntu-1604
   - INSTANCE=splunk-forwarder-ubuntu-1604
   - INSTANCE=splunk-monitor-ubuntu-1604
 
