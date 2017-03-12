@@ -83,7 +83,7 @@ action :install do
   end
 
   # enable start a boot
-  execute "#{new_resource.install_path}/bin/splunk enable boot-start -user #{new_resource.splunk_user} --accept-license" do
+  execute "#{new_resource.install_path}/bin/splunk enable boot-start -user #{new_resource.splunk_user} --accept-license --answer-yes" do
     only_if { ::File.exist? "#{new_resource.install_path}/ftr" }
   end
 
