@@ -39,3 +39,10 @@ suites:
       inspec_tests:
         - test/splunk_monitor
     attributes:
+  - name: splunk_server
+    run_list:
+      - recipe[splunk_server_test::default]
+    verifier:
+      inspec_tests:
+        - test/splunk_server
+    attributes:
